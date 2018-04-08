@@ -592,7 +592,7 @@
         android:layout_centerHorizontal="true"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="ip"
+        android:text="192.168.10.50"
         android:textAlignment="center" />
 
     <Button

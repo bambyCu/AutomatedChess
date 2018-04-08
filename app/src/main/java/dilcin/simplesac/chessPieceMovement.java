@@ -1,5 +1,7 @@
 package dilcin.simplesac;
 
+import java.util.ArrayList;
+
 /**
  * Created by dilcin on 17. 2. 2018.
  */
@@ -7,7 +9,8 @@ package dilcin.simplesac;
 public class chessPieceMovement {
     boolean boardCollor[][] = new boolean [8][8];
     boolean boardMovable[][] = new boolean [8][8];
-    String board[][] = {
+    ArrayList<Integer> worker = new ArrayList();
+    String pieceValues[][] = {
             {"br","bk","bb","bq","bK","bb","bk","br"},
             {"bp","bp","bp","bp","bp","bp","bp","bp"},
             {" "," "," "," "," "," "," "," "},
@@ -64,7 +67,36 @@ public class chessPieceMovement {
         return 0;
     }
 
-    boolean[][] legalMoves(int row, int col, char color, char piece,String board[][])
+    int getPieceValue(String in) {
+        int val = 0;
+        char piece = 0;
+        char color = 0;
+        if (in != " ")
+        {
+            color = in.charAt(0);
+            piece = in.charAt(1);
+        }
+        if (piece == 'p') {
+            val=10;
+        } else if (piece == 'r') {
+            val = 50;
+        } else if (piece == 'b') {
+            val = 30;
+        } else if (piece == 'k') {
+            val = 30;
+        } else if (piece == 'q') {
+            val = 90;
+        } else if (piece == 'K') {
+            val = 900;
+        }
+        if (color == 'b')
+        {
+            val = val * (-1);
+        }
+        return val;
+    }
+
+    boolean[][] legalMoves(int rowIn, int colIn,String board[][])
     {
        /* for(int a = 0;a < 8; a++)
         {
@@ -74,6 +106,16 @@ public class chessPieceMovement {
             }
             System.out.println();
         }*/
+        int row = rowIn ;
+        int col = colIn ;
+        for(int a = 0;a < 8; a++)
+        {
+            for(int b = 0;b < 8; b++)
+            {
+                System.out.print(board[a][b]);
+            }
+            System.out.println();
+        }
         for (int a = 0; a < 8; a++)
         {
             for(int b =0;b<8;b++)
@@ -81,7 +123,15 @@ public class chessPieceMovement {
                 boardMovable[a][b] = false;
             }
         }
+        if (board[row][col].length() <=1)
+        {
+            return boardMovable;
+        }
+        char color = board[row][col].charAt(0);
+        char piece = board[row][col].charAt(1);
         char color1;
+        System.out.println(color);
+        System.out.println(piece);
         if(color == 'w')
         {
             color1 = 'b';
@@ -252,21 +302,33 @@ public class chessPieceMovement {
         if(piece == 'K')
         {
             boardMovable[row][col] = true;
-            if(col+1 < 8 && board[row][col+1].charAt(0) != color)
+            if(col+1 < 8)
             {
-                boardMovable[row][col+1] = true;
+                if (board[row][col+1].charAt(0) != color)
+                {
+                    boardMovable[row][col+1] = true;
+                }
             }
-            if(col-1 >= 0 && board[row][col-1].charAt(0) != color)
+            if(col-1 >= 0)
             {
-                boardMovable[row][col-1] = true;
+                if ( board[row][col-1].charAt(0) != color)
+                {
+                    boardMovable[row][col-1] = true;
+                }
             }
-            if(row+1 < 8 && board[row+1][col].charAt(0) != color)//1*
+            if(row+1 < 8)//1*
             {
-                boardMovable[row+1][col] = true;
+                if (board[row+1][col].charAt(0) != color)
+                {
+                    boardMovable[row+1][col] = true;
+                }
             }
-            if(row-1 < 8 && board[row-1][col].charAt(0) != color)//1* a toto yu musi byt lebo inac sa prekresluju aj priatelske jednotky
+            if(row-1 >= 0)//1* a toto yu musi byt lebo inac sa prekresluju aj priatelske jednotky
             {
-                boardMovable[row-1][col] = true;
+                if (board[row-1][col].charAt(0) != color)
+                {
+                    boardMovable[row-1][col] = true;
+                }
             }
             if(row+1 < 8 )
             {
@@ -316,14 +378,18 @@ public class chessPieceMovement {
         else if(piece == 'p')
         {
             boardMovable[row][col] = true;
-            if(board[row + 1][col].charAt(0) != color1 && board[row + 1][col].charAt(0) != color)
+            if (row + 1 < 8)
             {
-                boardMovable[row + 1][col] = true;
-                if (row == 1)
+                if(board[row + 1][col].charAt(0) != color1 && board[row + 1][col].charAt(0) != color)
                 {
-                    boardMovable[row + 2][col] = true;
+                    boardMovable[row + 1][col] = true;
+                    if (row == 1)
+                    {
+                        boardMovable[row + 2][col] = true;
+                    }
                 }
             }
+
             if (col + 1 < 8 && board[row + 1][col + 1].charAt(0) == color1)
             {
                 boardMovable[row + 1][col + 1] = true;
@@ -335,4 +401,121 @@ public class chessPieceMovement {
         }
         return boardMovable;
     }
+
+     void chessAI(String[][] board)
+    {
+        int[][] chessBoardValues = new int [8][8];
+
+        for (int a = 0;a<8;a++)
+        {
+            for (int b = 0;b<8;b++)
+            {
+                chessBoardValues[a][b] = getPieceValue(board[a][b]);
+                //System.out.print(chessBoardValues[a][b]);
+            }
+            //System.out.println();
+        }
+        for (int a = 0;a<8;a++)
+        {
+            for (int b = 0;b<8;b++)
+            {
+                if (board[a][b] != " " && board[a][b].charAt(0) =='b' )
+                {
+                    System.out.println("worker");
+                    int[] positions = AIWorker(a,b,board,1) ;
+                    for(int i = 0 ; i<positions.length;i++)
+                    {
+                        System.out.print(positions[i] + ", ");
+                    }
+                    worker.clear();
+                    System.out.println("worker end");
+                }
+            }
+        }
+    }
+    int[] AIWorker(int row, int col, String[][] board, int deep)
+    {
+        int[][] chessBoardValues = new int [8][8];
+        boolean[][]positions = legalMoves(row,col,board);
+        for (int a = 0;a<8;a++)
+        {
+            for (int b = 0;b<8;b++)
+            {
+                chessBoardValues[a][b] = getPieceValue(board[a][b]);
+                //System.out.print(chessBoardValues[a][b]);
+            }
+            //System.out.println();
+        }
+        if (deep <= 0)
+        {
+            int positive = 0 ,negative = 0;
+            for (int a = 0;a<8;a++)
+            {
+                for (int b = 0;b<8;b++)
+                {
+                    if (chessBoardValues[a][b]< 0)
+                    {
+                        negative = negative + chessBoardValues[a][b];
+                    }
+                    if (chessBoardValues[a][b]> 0)
+                    {
+                        positive = positive + chessBoardValues[a][b];
+                    }
+                }
+            }
+            worker.add(9);
+            worker.add(positive);
+            worker.add(negative);
+            return new int[1];
+        }
+        for (int a = 0;a<8;a++)
+        {
+            for (int b = 0;b<8;b++)
+            {
+                if (positions[a][b])
+                {
+                    if(a != row || b!=col)
+                    {
+                        worker.add(row);
+
+                        worker.add(col);
+
+                        worker.add(a);
+
+                        worker.add(b);
+                        String temp = board[row][col];
+                        //System.out.println(worker);
+                        board[row][col] = board [a][b];
+                        //System.out.println("DEEP : " + deep);
+                        /*for (int i = 0;i<8;i++)
+                        {
+                            for (int j = 0;j<8;j++)
+                            {
+                                System.out.print(board[i][j]);
+                            }
+                            System.out.println();
+                        }*/
+                        board[a][b] = temp;
+                        deep--;
+                        AIWorker(a,b,board,deep);
+                        System.out.println(worker);
+                    }
+                }
+            }
+        }
+        int temp[] = new int [50];
+        int count = 0;
+        for (int a = 0;a<worker.size()-2;a++)
+        {
+            if (worker.get(a)==9)
+            {
+                temp [count] = worker.get(a + 1);
+                count++;
+                temp [count] = worker.get(a + 2);
+                count++;
+            }
+        }
+        return temp;
+    }
+
 }

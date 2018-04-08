@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 public class MovementAdmin {
     public int a = 0;
+    String IP;
     ArrayList<ImageButton> buttonList = new ArrayList<ImageButton>();
     boolean goingTo = false;
     String board[][] = {
@@ -50,8 +51,9 @@ public class MovementAdmin {
     ArrayList<Integer> movesMemRow = new ArrayList <Integer>();
     ArrayList<Integer> movesMemCol = new ArrayList <Integer>();
     chessPieceMovement movement = new chessPieceMovement();
-    MovementAdmin(ArrayList<ImageButton> inputList,Context con)
+    MovementAdmin(ArrayList<ImageButton> inputList,Context con,String IPIn)
     {
+        IP = IPIn;
         context = con;
         buttonList = inputList;
         for (int a = 0; a < 8; a++)
@@ -81,7 +83,10 @@ public class MovementAdmin {
             goingTo = true; //setting this to true means  legal chess piece has been selected to be moved from its original position
             fromWhere[0] = row;
             fromWhere[1] = col;//this information has to be saved for later, this info is send to arduino
-            boardMovable = movement.legalMoves((row),(col),board[(row)][col].charAt(0),board[row][col].charAt(1),board);
+            boardMovable = movement.legalMoves(row,col,board);
+
+            chessPieceMovement c = new chessPieceMovement();
+            //c.chessAI(board);
             //boardMovable is variable in which are stored all legal moves for chosen piece at the moment
             for(int a = 0;a < 8; a++)
             {
@@ -160,7 +165,9 @@ public class MovementAdmin {
             }
                 /*System.out.println("fromWhere [ " + (fromWhere/8) + " ][" + (fromWhere%8)+"]");
                 System.out.println("toWhere [ " + (mem/8) + " ][" + (mem%8)+"]");*/
-            String url = "http://" + "192.168.10.50" + "/&" + "f1" + ((frow)+1) + "f2" + ((fcol)+1) + "t1" + (trow+1) +"t2" + (tcol+1);
+            String url = "http://" + IP + "/&" + "f1" + ((frow)+1) + "f2" + ((fcol)+1) + "t1" + (trow+1) +"t2" + (tcol+1);
+
+            System.out.println(url);
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                     new Response.Listener<String>() {
                         @Override
@@ -246,6 +253,7 @@ public class MovementAdmin {
                 {
                     buttonList.get(a*8+b).setImageDrawable(null);
                 }
+                board = memBoard.clone();
             }
         }
         movesMemCol.clear();

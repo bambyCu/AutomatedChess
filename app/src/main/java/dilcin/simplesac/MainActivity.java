@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         Button undo =(Button)findViewById(R.id.Button2);
         ImageButton reset =(ImageButton)findViewById(R.id.imageButton);
         final GridLayout gl =(GridLayout)findViewById(R.id.gridLayout);
-        final GridLayout gl2 =(GridLayout)findViewById(R.id.gridLayout2);
+        EditText ipText =(EditText) findViewById(R.id.editText);
         buttonList.add((ImageButton) findViewById(R.id.iButton1));
         buttonList.add((ImageButton) findViewById(R.id.iButton2));
         buttonList.add((ImageButton) findViewById(R.id.iButton3));
@@ -118,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
         textList.add((TextView) findViewById(R.id.textView14));
         textList.add((TextView) findViewById(R.id.textView15));
         textList.add((TextView) findViewById(R.id.textView16));
-
         speech = (Button)findViewById(R.id.button2);
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -186,10 +187,12 @@ public class MainActivity extends AppCompatActivity {
         {
             buttonList.get(a).setOnClickListener(new Akcioner(a));
         }
-        admin = new MovementAdmin(buttonList,this);
+        admin = new MovementAdmin(buttonList,this, ipText.getText().toString());
+
     }
     class Akcioner implements View.OnClickListener
     {
+
         int mem;//number for button, all should be unique
         Akcioner(int memIn)
         {
@@ -202,7 +205,6 @@ public class MainActivity extends AppCompatActivity {
             //System.out.println(mem);
             if (!admin.isSelected())
             {
-
                 admin.select(mem);
             }
             else if (admin.isSelected()) // after we have chosen legal place with piece, after we touch it again it returns to basic form
